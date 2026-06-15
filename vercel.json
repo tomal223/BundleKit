@@ -1,10 +1,12 @@
 {
-  "framework": "remix",
   "buildCommand": "npm run build",
   "installCommand": "npm install --ignore-scripts && node scripts/postinstall.js",
-  "outputDirectory": "build",
+  "outputDirectory": "build/client",
   "regions": ["sin1"],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/api/index" }
+  ]
 }
