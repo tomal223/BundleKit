@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "npx prisma generate && npm run build",
   "installCommand": "npm install --ignore-scripts && node scripts/postinstall.js",
   "outputDirectory": "build/client",
   "regions": ["sin1"],
