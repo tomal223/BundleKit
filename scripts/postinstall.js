@@ -6,7 +6,7 @@
  * This script is a no-op in production — Prisma uses the pg adapter there.
  */
 if (process.env.NODE_ENV !== "production") {
-  const { execSync } = require("child_process");
+  const { execSync } = await import("child_process");
   try {
     execSync("cd node_modules/better-sqlite3 && npx node-gyp rebuild --release", {
       stdio: "inherit",
