@@ -1,0 +1,17 @@
+{
+  "name": "BundleKit Widget",
+  "blocks": {
+    "progress-bar": {
+      "name": "Progress Bar"
+    },
+    "bogo-offer": {
+      "name": "BOGO Offer"
+    },
+    "quantity-breaks": {
+      "name": "Quantity Breaks"
+    },
+    "free-gift": {
+      "name": "Free Gift"
+    }
+  }
+}

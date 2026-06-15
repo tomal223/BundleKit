@@ -1,0 +1,30 @@
+{%- comment -%}
+  BundleKit — Free Gift block (Theme App Extension).
+  Shows the active free-gift threshold offer; lets the shopper add the gift.
+{%- endcomment -%}
+
+<bundlekit-widget
+  block-type="free-gift"
+  product-id="gid://shopify/Product/{{ product.id | default: 0 }}"
+  currency="{{ cart.currency.iso_code }}"
+  cart-total="{{ cart.total_price }}"
+  {% if block.settings.accent_color != blank %}style="--bk-accent-override: {{ block.settings.accent_color }}"{% endif %}
+  {{ block.shopify_attributes }}
+></bundlekit-widget>
+
+<link rel="stylesheet" href="{{ 'bundle-widget.css' | asset_url }}">
+<script src="{{ 'bundle-widget.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "Free Gift Progress",
+  "target": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,136 @@
+// BundleKit Prisma schema
+//
+// DEV: SQLite (zero-setup). PROD: switch datasource provider to "postgresql"
+// and set DATABASE_URL. All types below are compatible with both providers.
+// SQLite limitations honored: enum-like fields use String, JSON payloads and
+// ID arrays are stored as JSON-encoded String columns (see comments).
+
+generator client {
+  provider   = "prisma-client-js"
+  // "client" = Prisma query compiler + driver adapters (no native engine binary).
+  // Works with better-sqlite3 (dev) and @prisma/adapter-pg (production Postgres).
+  engineType = "client"
+}
+
+// DEV:  provider = "sqlite"
+// PROD: provider = "postgresql"  ← switch this before deploying to Vercel
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Shopify session storage (managed by @shopify/shopify-app-session-storage-prisma) ──
+// Access tokens live ONLY here — never duplicated into app tables.
+model Session {
+  id            String    @id
+  shop          String
+  state         String
+  isOnline      Boolean   @default(false)
+  scope         String?
+  expires       DateTime?
+  accessToken   String
+  userId        BigInt?
+  firstName     String?
+  lastName      String?
+  email         String?
+  accountOwner  Boolean   @default(false)
+  locale        String?
+  collaborator  Boolean?  @default(false)
+  emailVerified Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+// ── One row per installed store ──
+model Shop {
+  id             String    @id @default(uuid())
+  shopDomain     String    @unique // e.g. my-store.myshopify.com
+  shopifyShopGid String?   // gid://shopify/Shop/123 — needed for shop-owned metafield writes
+  plan           String    @default("free") // free | growth | pro
+  automaticDiscountGid String? // the one discountAutomaticApp backing all offers
+  installedAt    DateTime  @default(now())
+  uninstalledAt  DateTime?
+  metafieldSyncedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  offers          Offer[]
+  analyticsEvents AnalyticsEvent[]
+  analyticsDaily  AnalyticsDaily[]
+}
+
+// ── Offers: the core entity ──
+model Offer {
+  id         String  @id @default(uuid())
+  shopId     String
+  shop       Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+
+  type       String  // quantity_break | bogo | bundle | free_gift
+  status     String  @default("draft") // draft | active | paused | scheduled | expired
+  title      String  // internal name shown in admin
+
+  // Targeting
+  targetType String  // all | product | collection | variant
+  targetIds  String  @default("[]") // JSON-encoded array of GIDs
+  // Denormalized cache: collection targets expanded to product GIDs at sync
+  // time (equals targetIds for other target types). Used by the storefront
+  // proxy endpoint to filter offers without Admin API calls.
+  expandedTargetIds String @default("[]")
+
+  // Discount config — JSON-encoded, shape varies by offer type:
+  //  quantity_break: { "tiers": [{ "qty": 2, "type": "pct", "value": 10 }] }
+  //  bogo:           { "buyQty": 1, "getQty": 1, "getProductGid": "gid://...", "discountPct": 100 }
+  config     String
+
+  // Scheduling
+  startsAt   DateTime?
+  endsAt     DateTime?
+
+  // Priority for conflict resolution (lower = higher priority)
+  priority   Int @default(0)
+
+  // Shopify sync bookkeeping
+  metafieldSyncedAt DateTime?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  analyticsEvents AnalyticsEvent[]
+  analyticsDaily  AnalyticsDaily[]
+
+  @@index([shopId, status])
+}
+
+// ── Analytics events (append-only) ──
+model AnalyticsEvent {
+  id             String   @id @default(uuid())
+  shopId         String
+  shop           Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  offerId        String?
+  offer          Offer?   @relation(fields: [offerId], references: [id], onDelete: SetNull)
+
+  eventType      String   // offer_viewed | discount_applied | order_completed
+  orderId        String?
+  baseAmount     Decimal?
+  discountAmount Decimal?
+  currency       String   @default("USD")
+  occurredAt     DateTime @default(now())
+
+  @@index([shopId, occurredAt(sort: Desc)])
+  @@index([offerId, occurredAt(sort: Desc)])
+}
+
+// ── Aggregated daily stats (materialized for dashboard speed) ──
+model AnalyticsDaily {
+  shopId            String
+  shop              Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  offerId           String
+  offer             Offer   @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  date              DateTime // date-truncated
+  views             Int     @default(0)
+  discountsApplied  Int     @default(0)
+  discountTotal     Decimal @default(0)
+  revenueAttributed Decimal @default(0)
+
+  @@id([shopId, offerId, date])
+}

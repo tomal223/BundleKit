@@ -1,0 +1,52 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "89d0e3ddd8c1fcd5db946ee7399578f6"
+name = "BundleKit"
+handle = "bundlekit"
+# ↓ Update this to your Vercel URL after deploying
+application_url = "https://bundlekit.vercel.app"
+embedded = true
+
+[access_scopes]
+scopes = "write_products,write_discounts"
+
+[app_proxy]
+# ↓ Update to your Vercel URL after deploying
+url = "https://bundlekit.vercel.app/api/proxy"
+prefix = "apps"
+subpath = "bundlekit"
+
+[webhooks]
+api_version = "2026-07"
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = [ "app/uninstalled" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/scopes_update"
+  topics = [ "app/scopes_update" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/data_request"
+  compliance_topics = [ "customers/data_request" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/customers/redact"
+  compliance_topics = [ "customers/redact" ]
+
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/shop/redact"
+  compliance_topics = [ "shop/redact" ]
+
+[auth]
+# ↓ Update to your Vercel URL after deploying
+redirect_urls = [
+  "https://bundlekit.vercel.app/auth/callback",
+  "https://bundlekit.vercel.app/auth/shopify/callback",
+  "https://bundlekit.vercel.app/api/auth/callback"
+]
+
+[build]
+include_config_on_deploy = true
+automatically_update_urls_on_dev = true

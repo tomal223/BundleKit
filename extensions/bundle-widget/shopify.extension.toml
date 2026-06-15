@@ -1,0 +1,7 @@
+api_version = "2025-10"
+uid = "8738ae3d-25c4-f928-2ab3-1488c50a48290045fd0b"
+
+[[extensions]]
+type = "theme"
+name = "BundleKit Widget"
+handle = "bundle-widget"

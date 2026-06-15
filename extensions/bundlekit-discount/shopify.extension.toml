@@ -1,0 +1,17 @@
+api_version = "2025-10"
+uid = "37cd8c18-4089-843a-54c8-82816530e532f40a9cab"
+
+[[extensions]]
+name = "BundleKit Discount"
+handle = "bundlekit-discount"
+type = "function"
+description = "Applies BundleKit offers (quantity breaks, BOGO, bundles, free gifts) at checkout"
+
+  [[extensions.targeting]]
+  target = "cart.lines.discounts.generate.run"
+  input_query = "src/cart_lines_discounts_generate_run.graphql"
+  export = "cart-lines-discounts-generate-run"
+
+  [extensions.build]
+  command = ""
+  path = "dist/function.wasm"

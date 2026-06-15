@@ -1,0 +1,33 @@
+{%- comment -%}
+  BundleKit — BOGO offer block (Theme App Extension).
+  Shows "Buy X get Y" messaging for the current product.
+{%- endcomment -%}
+
+{%- if product -%}
+<bundlekit-widget
+  block-type="bogo"
+  product-id="gid://shopify/Product/{{ product.id }}"
+  variant-id="gid://shopify/ProductVariant/{{ product.selected_or_first_available_variant.id }}"
+  current-price="{{ product.selected_or_first_available_variant.price }}"
+  currency="{{ cart.currency.iso_code }}"
+  {% if block.settings.accent_color != blank %}style="--bk-accent-override: {{ block.settings.accent_color }}"{% endif %}
+  {{ block.shopify_attributes }}
+></bundlekit-widget>
+
+<link rel="stylesheet" href="{{ 'bundle-widget.css' | asset_url }}">
+<script src="{{ 'bundle-widget.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "BOGO Offer",
+  "target": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color"
+    }
+  ]
+}
+{% endschema %}

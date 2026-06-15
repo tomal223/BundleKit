@@ -1,0 +1,113 @@
+/* BundleKit widget — scoped to .bk-*, themable via CSS custom properties */
+
+bundlekit-widget {
+  --bk-accent: var(--bk-accent-override, #2a7d4f);
+  --bk-border: #d9d9d9;
+  --bk-radius: 8px;
+  --bk-text: inherit;
+  display: block;
+  margin: 12px 0;
+}
+
+bundlekit-widget[hidden] {
+  display: none;
+}
+
+.bk-widget {
+  font: inherit;
+  color: var(--bk-text);
+}
+
+.bk-offer-title {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.bk-tiers {
+  display: grid;
+  gap: 8px;
+}
+
+.bk-tier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  background: transparent;
+  border: 1px solid var(--bk-border);
+  border-radius: var(--bk-radius);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.bk-tier:hover,
+.bk-tier:focus-visible {
+  border-color: var(--bk-accent);
+}
+
+.bk-tier:focus-visible {
+  outline: 2px solid var(--bk-accent);
+  outline-offset: 2px;
+}
+
+.bk-tier--active {
+  border-color: var(--bk-accent);
+  box-shadow: inset 0 0 0 1px var(--bk-accent);
+}
+
+.bk-tier-qty {
+  font-weight: 600;
+}
+
+.bk-tier-deal {
+  color: var(--bk-accent);
+  font-weight: 600;
+}
+
+.bk-tier-price {
+  margin-left: auto;
+  opacity: 0.85;
+}
+
+.bk-offer-label {
+  font-size: 1em;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.bk-note {
+  margin: 0;
+  font-size: 0.85em;
+  opacity: 0.8;
+}
+
+.bk-progress-label {
+  font-size: 0.95em;
+  font-weight: 600;
+  margin: 0 0 6px;
+}
+
+.bk-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--bk-border);
+  overflow: hidden;
+}
+
+.bk-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--bk-accent);
+  transition: width 200ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bk-progress-fill {
+    transition: none;
+  }
+}

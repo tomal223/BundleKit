@@ -1,0 +1,45 @@
+{%- comment -%}
+  BundleKit — Quantity Breaks block (Theme App Extension, OS 2.0 app block).
+  Renders volume discount tiers on the product page. SEO-safe: the widget
+  never emits h1/h2.
+{%- endcomment -%}
+
+{%- if product -%}
+<bundlekit-widget
+  block-type="quantity-breaks"
+  product-id="gid://shopify/Product/{{ product.id }}"
+  variant-id="gid://shopify/ProductVariant/{{ product.selected_or_first_available_variant.id }}"
+  current-price="{{ product.selected_or_first_available_variant.price }}"
+  currency="{{ cart.currency.iso_code }}"
+  {% if block.settings.heading != blank %}heading="{{ block.settings.heading | escape }}"{% endif %}
+  {% if block.settings.accent_color != blank %}style="--bk-accent-override: {{ block.settings.accent_color }}"{% endif %}
+  {{ block.shopify_attributes }}
+>
+  <noscript>
+    <p>Volume discounts available — add more to your cart to save.</p>
+  </noscript>
+</bundlekit-widget>
+
+<link rel="stylesheet" href="{{ 'bundle-widget.css' | asset_url }}">
+<script src="{{ 'bundle-widget.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Quantity Breaks",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading override",
+      "info": "Leave blank to use the offer's own message"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color"
+    }
+  ]
+}
+{% endschema %}
