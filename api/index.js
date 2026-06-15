@@ -1,5 +1,4 @@
-import pkg from "@react-router/node";
-const { createRequestHandler } = pkg;
+import { createRequestHandler } from "@react-router/node";
 
 let handler;
 
